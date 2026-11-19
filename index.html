@@ -32,16 +32,21 @@
 (function(){
   var PKG='com.listadecompras.simples', SCHEME='listadecompras';
   var STORE='https://play.google.com/store/apps/details?id='+PKG;
-  var m=location.hash.match(/d=([^&]+)/), data=m&&m[1], p=null;
-  try{p=JSON.parse(decodeURIComponent(data));}catch(e){}
-  if(p){
-    document.getElementById('t').textContent=p.n||'Lista compartilhada';
-    var box=document.getElementById('items');
-    p.i.forEach(function(x){var d=document.createElement('div');d.className='row'+(x[1]?' done':'');d.textContent=(x[1]?'✓ ':'☐ ')+x[0];box.appendChild(d);});
-  }
-  var intent='intent://import?d='+data+'#Intent;scheme='+SCHEME+';package='+PKG+';S.browser_fallback_url='+encodeURIComponent(STORE)+';end';
+  var hash=location.hash.slice(1), P={};
+  hash.split('&').forEach(function(s){var k=s.indexOf('=');if(k>0)P[s.slice(0,k)]=s.slice(k+1);});
+  function dec(s){try{return decodeURIComponent(s);}catch(e){return s;}}
   var b=document.getElementById('open');
-  if(!data||!/Android/i.test(navigator.userAgent)){b.style.display='none';return;}
+  if(P.i){
+    document.getElementById('t').textContent=dec(P.t||'')||'Lista compartilhada';
+    var box=document.getElementById('items');
+    P.i.split(',').forEach(function(r){
+      var done=r.charAt(0)==='~', name=dec(done?r.slice(1):r);
+      if(!name)return;
+      var d=document.createElement('div');d.className='row'+(done?' done':'');d.textContent=(done?'✓ ':'☐ ')+name;box.appendChild(d);
+    });
+  }
+  var intent='intent://import?'+hash+'#Intent;scheme='+SCHEME+';package='+PKG+';S.browser_fallback_url='+encodeURIComponent(STORE)+';end';
+  if(!P.i||!/Android/i.test(navigator.userAgent)){b.style.display='none';return;}
   b.href=intent;
   setTimeout(function(){location.href=intent;},300);
 })();
