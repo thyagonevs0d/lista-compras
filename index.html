@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lista de Compras Fácil</title>
+<style>
+  body{font-family:system-ui,sans-serif;background:#F4F6F5;margin:0;color:#1D2A22}
+  .wrap{max-width:440px;margin:0 auto;padding:20px}
+  .head{background:#1B8F4C;color:#fff;border-radius:18px 18px 0 0;padding:18px}
+  .head small{letter-spacing:1.5px;font-weight:800;opacity:.85;font-size:11px}
+  .head h1{margin:4px 0 0;font-size:24px}
+  .card{background:#fff;border-radius:0 0 18px 18px;padding:8px 18px 18px}
+  .row{padding:10px 0;border-bottom:1px solid #EEF1EF;font-size:18px}
+  .done{text-decoration:line-through;color:#8A958E}
+  a.btn{display:block;text-align:center;margin-top:14px;padding:15px;border-radius:12px;font-weight:700;text-decoration:none;font-size:17px}
+  .open{background:#1B8F4C;color:#fff}.store{border:2px solid #1B8F4C;color:#1B8F4C}
+  p{color:#5d6b63;font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head"><small>LISTA DE COMPRAS FÁCIL</small><h1 id="t">Lista compartilhada</h1></div>
+  <div class="card">
+    <div id="items"></div>
+    <a id="open" class="btn open" href="#">Abrir esta lista no app</a>
+    <a class="btn store" href="https://play.google.com/store/apps/details?id=com.listadecompras.simples">Baixar o app na Play Store</a>
+    <p>Com o app instalado, a lista é salva como uma lista nova para você.</p>
+  </div>
+</div>
+<script>
+(function(){
+  var PKG='com.listadecompras.simples', SCHEME='listadecompras';
+  var STORE='https://play.google.com/store/apps/details?id='+PKG;
+  var m=location.hash.match(/d=([^&]+)/), data=m&&m[1], p=null;
+  try{p=JSON.parse(decodeURIComponent(data));}catch(e){}
+  if(p){
+    document.getElementById('t').textContent=p.n||'Lista compartilhada';
+    var box=document.getElementById('items');
+    p.i.forEach(function(x){var d=document.createElement('div');d.className='row'+(x[1]?' done':'');d.textContent=(x[1]?'✓ ':'☐ ')+x[0];box.appendChild(d);});
+  }
+  var intent='intent://import?d='+data+'#Intent;scheme='+SCHEME+';package='+PKG+';S.browser_fallback_url='+encodeURIComponent(STORE)+';end';
+  var b=document.getElementById('open');
+  if(!data||!/Android/i.test(navigator.userAgent)){b.style.display='none';return;}
+  b.href=intent;
+  setTimeout(function(){location.href=intent;},300);
+})();
+</script>
+</body>
+</html>
